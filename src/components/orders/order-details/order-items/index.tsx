@@ -70,6 +70,7 @@ function OrderItems({
     handleDeleteOrderItem,
     fetchOptionsIfNeeded,
     getRegularCleaningOptions,
+    skipAutoPriceRef,
   } = useOrderItems(orderId, onItemsChange);
 
   const columns = getColumns({
@@ -97,6 +98,7 @@ function OrderItems({
     isOptionsLoading,
     filteredItems,
     getRegularCleaningOptions,
+    skipAutoPriceRef,
   });
 
   const handlePrintTickets = () => {
