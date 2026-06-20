@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import apiCall from "@/utils/api-call";
 import { routes } from "@/utils/routes";
 import { validateAndSetErrors } from "@/utils/validation";
@@ -45,6 +45,7 @@ export function useOrderItems(orderId: string, onItemsChange?: () => void) {
   const [createRegularLoading, setCreateRegularLoading] = useState(false);
   const [updateRegularLoading, setUpdateRegularLoading] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const skipAutoPriceRef = useRef(false);
 
   const filteredItems = selectedCategory
     ? allItems.filter((item) => item.categoryId === selectedCategory)
@@ -383,6 +384,10 @@ export function useOrderItems(orderId: string, onItemsChange?: () => void) {
 
   useEffect(() => {
     if (!regularItemData.item || !regularItemData.cleaningMethod) return;
+    if (skipAutoPriceRef.current) {
+      skipAutoPriceRef.current = false;
+      return;
+    }
     const selectedItem = allItems.find((i) => i.atId === regularItemData.item);
     if (!selectedItem) return;
     const price =
@@ -438,5 +443,6 @@ export function useOrderItems(orderId: string, onItemsChange?: () => void) {
     handleDeleteOrderItem,
     fetchOptionsIfNeeded,
     getRegularCleaningOptions,
+    skipAutoPriceRef,
   };
 }

@@ -31,6 +31,7 @@ export const getColumns = ({
   isOptionsLoading,
   filteredItems,
   getRegularCleaningOptions,
+  skipAutoPriceRef,
 }: any) => [
   {
     accessor: (row: any) => {
@@ -162,6 +163,7 @@ export const getColumns = ({
 
                 if (matchedItem) {
                   setSelectedCategory(matchedItem.categoryId);
+                  skipAutoPriceRef.current = true;
                   setRegularItemData({
                     item: matchedItem.atId,
                     quantity: String(row.quantity),
