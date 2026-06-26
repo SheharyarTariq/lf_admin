@@ -61,7 +61,14 @@ export const getColumns = ({
         );
         name = matched?.name || row.item;
       }
-      return <span title={name}>{name}</span>;
+      return (
+        <span className="relative group/name cursor-default">
+          {name}
+          <span className="pointer-events-none absolute left-0 top-full z-50 mt-1 hidden max-w-xs rounded bg-gray-800 px-2 py-1 text-xs text-white group-hover/name:block whitespace-normal">
+            {name}
+          </span>
+        </span>
+      );
     },
     className: "max-w-[220px] overflow-hidden text-ellipsis",
     header: "Item Name",
