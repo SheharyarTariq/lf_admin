@@ -31,6 +31,8 @@ interface PostcodesProps {
   onPostcodesChange?: (count: number) => void;
 }
 
+const PAGE_SIZE = 30;
+
 function Postcodes({ areaId, onPostcodesChange }: Readonly<PostcodesProps>) {
   const [postcodes, setPostcodes] = useState<Postcode[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -38,15 +40,18 @@ function Postcodes({ areaId, onPostcodesChange }: Readonly<PostcodesProps>) {
   const [createLoading, setCreateLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
 
-  const getPostcodes = async (showLoader = true) => {
+  const getPostcodes = async (page: number, showLoader = true) => {
     if (showLoader) setLoading(true);
     const response = await apiCall<PostcodesData>({
-      endpoint: routes.api.getPostcodes(areaId),
+      endpoint: routes.api.getPostcodes(areaId, page),
       method: "GET",
     });
     if (response.success && response?.data) {
       setPostcodes(response.data.member);
+      setTotalItems(response.data.totalItems);
     }
     if (showLoader) setLoading(false);
   };
@@ -64,7 +69,7 @@ function Postcodes({ areaId, onPostcodesChange }: Readonly<PostcodesProps>) {
     });
 
     if (response.success) {
-      await getPostcodes(false);
+      await getPostcodes(currentPage, false);
     }
   };
 
@@ -76,7 +81,7 @@ function Postcodes({ areaId, onPostcodesChange }: Readonly<PostcodesProps>) {
       successMessage: "Postcode deleted successfully",
     });
     if (response.success) {
-      await getPostcodes(false);
+      await getPostcodes(currentPage, false);
       return true;
     }
     return false;
@@ -107,21 +112,21 @@ function Postcodes({ areaId, onPostcodesChange }: Readonly<PostcodesProps>) {
     if (response.success) {
       setErrors({});
       setNewPostcode("");
-      await getPostcodes(false);
+      await getPostcodes(currentPage, false);
       return true;
     }
     return false;
   };
 
   useEffect(() => {
-    getPostcodes();
-  }, []);
+    getPostcodes(currentPage);
+  }, [areaId, currentPage]);
 
   useEffect(() => {
     if (onPostcodesChange) {
-      onPostcodesChange(postcodes.length);
+      onPostcodesChange(totalItems);
     }
-  }, [postcodes, onPostcodesChange]);
+  }, [totalItems, onPostcodesChange]);
 
   const filteredPostcodes = postcodes.filter((p) =>
     p.postcodeString.toLowerCase().includes(searchQuery.toLowerCase())
@@ -170,6 +175,12 @@ function Postcodes({ areaId, onPostcodesChange }: Readonly<PostcodesProps>) {
         <GenericTable
           data={filteredPostcodes}
           isLoading={loading}
+          backendPagination={{
+            currentPage,
+            totalItems,
+            pageSize: PAGE_SIZE,
+            onPageChange: setCurrentPage,
+          }}
           columns={[
             {
               accessor: "postcodeString",
