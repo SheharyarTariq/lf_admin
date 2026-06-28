@@ -25,7 +25,10 @@ export const routes = {
     createSlot: "slots",
     updateSlot: (id: string) => `slots/${id}`,
     login: "login-check",
-    getPostcodes: (id: string) => `areas/${id}/postcodes`,
+    getPostcodes: (id: string, page: number | string = 1, search = "") =>
+      search
+        ? `areas/${id}/postcodes?page=${page}&search=${encodeURIComponent(search)}`
+        : `areas/${id}/postcodes?page=${page}`,
     createPostcode: "postcodes",
     markPostcodeActive: (id: string) => `postcodes/${id}/mark-as-active`,
     markPostcodeInactive: (id: string) => `postcodes/${id}/mark-as-inactive`,

@@ -49,6 +49,28 @@ export const getColumns = ({
 
       return "-";
     },
+    render: (row: any) => {
+      let name = "-";
+      if (row.item && typeof row.item === "object" && row.item.name)
+        name = row.item.name;
+      else if (row.openItemName) name = row.openItemName;
+      else if (row.name) name = row.name;
+      else if (typeof row.item === "string") {
+        const matched = allItems.find(
+          (i: any) => i.atId === row.item || `/items/${i.id}` === row.item
+        );
+        name = matched?.name || row.item;
+      }
+      return (
+        <span className="relative group/name cursor-default">
+          {name}
+          <span className="pointer-events-none absolute left-0 top-full z-50 mt-1 hidden max-w-xs rounded bg-gray-800 px-2 py-1 text-xs text-white group-hover/name:block whitespace-normal">
+            {name}
+          </span>
+        </span>
+      );
+    },
+    className: "max-w-[220px] overflow-hidden text-ellipsis",
     header: "Item Name",
     sortable: false,
   },
