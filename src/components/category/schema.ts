@@ -28,6 +28,11 @@ export const categoryNameSchema = yup.object({
 
 export const categoryItemSchema = yup.object({
   name: yup.string().trim().required("Item name is required"),
+  description: yup
+    .string()
+    .trim()
+    .max(255, "Description must be 255 characters or less")
+    .optional(),
   priceType: yup.string().required("Price type is required"),
   priceWashing: yup
     .number()
