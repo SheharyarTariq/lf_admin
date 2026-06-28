@@ -17,6 +17,7 @@ interface CategoryItem {
   "@type"?: string;
   id: string;
   name: string;
+  description?: string | null;
   priceDryCleaning: number | null;
   priceWashing: number | null;
   priceType: string;
@@ -45,6 +46,7 @@ const EditItemDialog = ({
   const [editItemData, setEditItemData] = useState({
     id: item.id,
     name: item.name,
+    description: item.description ?? "",
     priceWashing:
       item.priceWashing !== null && item.priceWashing !== undefined
         ? penceToPounds(item.priceWashing).toString()
@@ -65,6 +67,7 @@ const EditItemDialog = ({
         categoryItemSchema,
         {
           name: editItemData.name,
+          description: editItemData.description,
           priceType: editItemData.priceType,
           priceWashing: editItemData.priceWashing,
           priceDryCleaning: editItemData.priceDryCleaning,
@@ -78,6 +81,7 @@ const EditItemDialog = ({
     setIsUpdating(true);
     const payload = {
       name: editItemData.name.trim(),
+      description: editItemData.description.trim() || null,
       priceWashing: editItemData.priceWashing
         ? poundsToPence(Number(editItemData.priceWashing))
         : null,
@@ -120,6 +124,7 @@ const EditItemDialog = ({
         setEditItemData({
           id: item.id,
           name: item.name,
+          description: item.description ?? "",
           priceWashing:
             item.priceWashing !== null && item.priceWashing !== undefined
               ? penceToPounds(item.priceWashing).toString()
@@ -150,6 +155,24 @@ const EditItemDialog = ({
               if (errors.name) setErrors((prev) => ({ ...prev, name: "" }));
             }}
             error={errors.name}
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <label className="text-[14px] font-[500] text-black">
+            Description
+          </label>
+          <Input
+            placeholder="e.g. 1x duvet, 2x pillow cases, 1x bed sheet"
+            value={editItemData.description}
+            onChange={(e) => {
+              setEditItemData((prev) => ({
+                ...prev,
+                description: e.target.value,
+              }));
+              if (errors.description)
+                setErrors((prev) => ({ ...prev, description: "" }));
+            }}
+            error={errors.description}
           />
         </div>
         <div className="flex flex-col gap-2">
@@ -253,12 +276,14 @@ function ItemsTable({ categoryId, onItemsChange }: ItemsTableProps) {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [createItemData, setCreateItemData] = useState<{
     name: string;
+    description?: string;
     priceWashing?: string;
     priceDryCleaning?: string;
     priceType: string;
     position?: number;
   }>({
     name: "",
+    description: "",
     priceType: "Fixed",
   });
 
@@ -268,6 +293,7 @@ function ItemsTable({ categoryId, onItemsChange }: ItemsTableProps) {
         categoryItemSchema,
         {
           name: createItemData.name,
+          description: createItemData.description,
           priceType: createItemData.priceType,
           priceWashing: createItemData.priceWashing,
           priceDryCleaning: createItemData.priceDryCleaning,
@@ -280,6 +306,7 @@ function ItemsTable({ categoryId, onItemsChange }: ItemsTableProps) {
     setIsCreatingItem(true);
     const payload = {
       name: createItemData.name.trim(),
+      description: createItemData.description?.trim() || null,
       priceWashing: createItemData.priceWashing
         ? poundsToPence(Number(createItemData.priceWashing))
         : null,
@@ -304,7 +331,7 @@ function ItemsTable({ categoryId, onItemsChange }: ItemsTableProps) {
     setIsCreatingItem(false);
     if (response.success) {
       setErrors({});
-      setCreateItemData({ name: "", priceType: "Fixed" });
+      setCreateItemData({ name: "", description: "", priceType: "Fixed" });
       fetchItems(false);
       return true;
     }
@@ -357,6 +384,11 @@ function ItemsTable({ categoryId, onItemsChange }: ItemsTableProps) {
     {
       header: "Item Name",
       accessor: (item) => item.name || "-",
+      sortable: false,
+    },
+    {
+      header: "Description",
+      accessor: (item) => item.description || "-",
       sortable: false,
     },
     {
@@ -473,6 +505,24 @@ function ItemsTable({ categoryId, onItemsChange }: ItemsTableProps) {
                       setErrors((prev) => ({ ...prev, name: "" }));
                   }}
                   error={errors.name}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-[14px] font-[500] text-black">
+                  Description
+                </label>
+                <Input
+                  placeholder="e.g. 1x duvet, 2x pillow cases, 1x bed sheet"
+                  value={createItemData.description ?? ""}
+                  onChange={(e) => {
+                    setCreateItemData((prev) => ({
+                      ...prev,
+                      description: e.target.value,
+                    }));
+                    if (errors.description)
+                      setErrors((prev) => ({ ...prev, description: "" }));
+                  }}
+                  error={errors.description}
                 />
               </div>
               <div className="flex flex-col gap-2">
