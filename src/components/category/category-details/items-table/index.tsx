@@ -388,7 +388,11 @@ function ItemsTable({ categoryId, onItemsChange }: ItemsTableProps) {
     },
     {
       header: "Description",
-      accessor: (item) => item.description || "-",
+      accessor: (item) => (
+        <div className="w-[260px] md:w-[340px] whitespace-normal break-words">
+          {item.description || "-"}
+        </div>
+      ),
       sortable: false,
     },
     {
