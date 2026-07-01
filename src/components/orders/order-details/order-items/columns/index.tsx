@@ -1,4 +1,5 @@
 import React from "react";
+import Tooltip from "@mui/material/Tooltip";
 import FormDialog from "@/components/common/form-dailog";
 import { penceToPounds } from "@/utils/helper";
 import { OrderItem } from "../types";
@@ -62,12 +63,11 @@ export const getColumns = ({
         name = matched?.name || row.item;
       }
       return (
-        <span className="relative group/name cursor-default">
-          {name}
-          <span className="pointer-events-none absolute left-0 top-full z-50 mt-1 hidden max-w-xs rounded bg-gray-800 px-2 py-1 text-xs text-white group-hover/name:block whitespace-normal">
+        <Tooltip title={name} placement="top" arrow>
+          <span className="block max-w-[220px] cursor-default truncate">
             {name}
           </span>
-        </span>
+        </Tooltip>
       );
     },
     className: "max-w-[220px] overflow-hidden text-ellipsis",
